@@ -1,0 +1,123 @@
+version: '3'
+
+# Claude 模型配置切换
+vars:
+  SETTINGS_FILE: "{{.HOME}}/.claude/settings.json"
+
+  # GLM 模型配置
+  GLM_TOKEN: "{{.GLM_TOKEN}}"
+  GLM_BASE_URL: "https://open.bigmodel.cn/api/anthropic"
+  # 默认主模型
+  GLM_MODEL: "glm-4.7"
+  # 小型/快速模型，用于简单任务（如快速问答）
+  GLM_SMALL_MODEL: "glm-4.5-air"
+  # Haiku 级别模型（最快），简单/快速任务
+  GLM_HAIKU_MODEL: "glm-4.5-air"
+  # Opus 级别模型（最强），用于复杂任务
+  GLM_OPUS_MODEL: "glm-4.7"
+  # Sonnet 级别模型（平衡），日常使用
+  GLM_SONNET_MODEL: "glm-4.7"
+  # 禁用非必要网络请求（如遥测、更新检查），设为 1 可提升隐私和速度
+  GLM_DISABLE_TRAFFIC: "1"
+  # API 请求超时时间（毫秒），600000 = 10分钟
+  GLM_API_TIMEOUT: "600000"
+
+  # MiniMax 配置
+  MINIMAX_TOKEN: "{{.MINIMAX_TOKEN}}"
+  MINIMAX_BASE_URL: "https://api.minimaxi.com/anthropic"
+  # 默认主模型
+  MINIMAX_MODEL: "MiniMax-M2.1"
+  # 小型/快速模型，用于简单任务（如快速问答）
+  MINIMAX_SMALL_MODEL: "MiniMax-M2.1-lightning"
+  # Haiku 级别模型（最快），简单/快速任务
+  MINIMAX_HAIKU_MODEL: "MiniMax-M2.1-lightning"
+  # Sonnet 级别模型（平衡），日常使用
+  MINIMAX_SONNET_MODEL: "MiniMax-M2"
+  # Opus 级别模型（最强），用于复杂任务
+  MINIMAX_OPUS_MODEL: "MiniMax-M2.1"
+  # 禁用非必要网络请求（如遥测、更新检查），设为 1 可提升隐私和速度
+  MINIMAX_DISABLE_TRAFFIC: "1"
+  # API 请求超时时间（毫秒），600000 = 10分钟
+  MINIMAX_API_TIMEOUT: "600000"
+
+  # DeepSeek 配置
+  DEEPSEEK_TOKEN: "{{.DEEPSEEK_TOKEN}}"
+  DEEPSEEK_BASE_URL: "https://api.deepseek.com/anthropic"
+  # 默认主模型
+  DEEPSEEK_MODEL: "deepseek-reasoner"
+  # 小型/快速模型，用于简单任务（如快速问答）
+  DEEPSEEK_SMALL_MODEL: "deepseek-chat"
+  # Haiku 级别模型（最快），简单/快速任务
+  DEEPSEEK_HAIKU_MODEL: "deepseek-chat"
+  # Sonnet 级别模型（平衡），日常使用
+  DEEPSEEK_SONNET_MODEL: "deepseek-reasoner"
+  # Opus 级别模型（最强），用于复杂任务
+  DEEPSEEK_OPUS_MODEL: "deepseek-reasoner"
+  # 禁用非必要网络请求（如遥测、更新检查），设为 1 可提升隐私和速度
+  DEEPSEEK_DISABLE_TRAFFIC: "1"
+  # API 请求超时时间（毫秒），600000 = 10分钟
+  DEEPSEEK_API_TIMEOUT: "600000"
+
+
+tasks:
+  model-glm:
+    desc: "切换到 GLM 模型配置"
+    silent: true
+    cmds:
+      - |
+        jq '.env.ANTHROPIC_AUTH_TOKEN = "{{.GLM_TOKEN}}" |
+           .env.ANTHROPIC_BASE_URL = "{{.GLM_BASE_URL}}" |
+           .env.ANTHROPIC_MODEL = "{{.GLM_MODEL}}" |
+           .env.ANTHROPIC_SMALL_FAST_MODEL = "{{.GLM_SMALL_MODEL}}" |
+           .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "{{.GLM_OPUS_MODEL}}" |
+           .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "{{.GLM_SONNET_MODEL}}" |
+           .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "{{.GLM_HAIKU_MODEL}}" |
+           .env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "{{.GLM_DISABLE_TRAFFIC}}" |
+           .env.API_TIMEOUT_MS = "{{.GLM_API_TIMEOUT}}"' "{{.SETTINGS_FILE}}" > /tmp/settings.tmp && \
+        mv /tmp/settings.tmp "{{.SETTINGS_FILE}}"
+      - echo "已切换到 GLM 模型配置"
+      - task: model-show
+
+  model-minimax:
+    desc: "切换到 MiniMax 配置"
+    silent: true
+    cmds:
+      - |
+        jq '.env.ANTHROPIC_AUTH_TOKEN= "{{.MINIMAX_TOKEN}}" |
+            .env.ANTHROPIC_BASE_URL = "{{.MINIMAX_BASE_URL}}" |
+            .env.ANTHROPIC_MODEL = "{{.MINIMAX_MODEL}}" |
+            .env.ANTHROPIC_SMALL_FAST_MODEL = "{{.MINIMAX_SMALL_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "{{.MINIMAX_OPUS_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "{{.MINIMAX_SONNET_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "{{.MINIMAX_HAIKU_MODEL}}" |
+            .env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "{{.MINIMAX_DISABLE_TRAFFIC}}" |
+            .env.API_TIMEOUT_MS = "{{.MINIMAX_API_TIMEOUT}}"' "{{.SETTINGS_FILE}}" > /tmp/settings.tmp && \
+        mv /tmp/settings.tmp "{{.SETTINGS_FILE}}"
+      - echo "已切换到 MiniMax 配置"
+      - task: model-show
+
+  model-deepseek:
+    desc: "切换到 DeepSeek 配置"
+    silent: true
+    cmds:
+      - |
+        jq '.env.ANTHROPIC_AUTH_TOKEN = "{{.DEEPSEEK_TOKEN}}" |
+            .env.ANTHROPIC_BASE_URL = "{{.DEEPSEEK_BASE_URL}}" |
+            .env.ANTHROPIC_MODEL = "{{.DEEPSEEK_MODEL}}" |
+            .env.ANTHROPIC_SMALL_FAST_MODEL = "{{.DEEPSEEK_SMALL_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_OPUS_MODEL = "{{.DEEPSEEK_OPUS_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_SONNET_MODEL = "{{.DEEPSEEK_SONNET_MODEL}}" |
+            .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "{{.DEEPSEEK_HAIKU_MODEL}}" |
+            .env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "{{.DEEPSEEK_DISABLE_TRAFFIC}}" |
+            .env.API_TIMEOUT_MS = "{{.DEEPSEEK_API_TIMEOUT}}"' "{{.SETTINGS_FILE}}" > /tmp/settings.tmp && \
+        mv /tmp/settings.tmp "{{.SETTINGS_FILE}}"
+      - echo "已切换到 DeepSeek 配置"
+      - task: model-show
+
+  model-show:
+    desc: "查看当前 Claude 模型配置"
+    silent: true
+    cmds:
+      - jq '.env' "{{.SETTINGS_FILE}}"
+
+
